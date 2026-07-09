@@ -11,6 +11,7 @@ of game-art images.
 | Folder | What it is |
 |---|---|
 | `claude-command/chatgpt-images.md` | A slash command for Claude Code. Copy it into `~/.claude/commands/` and you get `/chatgpt-images` in every session. |
+| `claude-command/floor.md` | A slash command that makes **Sonnet do the coding and Opus review the diff**, to stretch your Opus weekly limit on Max plans. See "The floor command" below. |
 | `webdrive/cgArtBatch.js` | The preferred method: a Playwright script that drives ChatGPT through the browser's debug port (CDP). Reliable, runs in a background tab, does not fight you for the mouse. |
 | `rc_work/` | The fallback method: pure screen control (screenshot, find the button, click it). Works when CDP is not available. Has its own README with all the hard-won gotchas. |
 
@@ -65,6 +66,23 @@ download it, and file it. You can walk away.
   the page returns 403. Always download through the page (the script does this).
 - Free ChatGPT accounts have very limited image generation; Plus/Pro is what makes this
   pleasant.
+
+## The floor command (a bonus gift: stretch your Opus weekly limit)
+
+On a Max plan, Opus has a tight, separate weekly cap while Sonnet draws from a much bigger
+bucket. `floor.md` turns that into a two-tier "nursing unit": Sonnet is the **floor nurse**
+who does the hands-on coding, Opus is the **charge nurse** who only reviews the finished
+diff and signs off or bounces it back. Because the heavy file-reading stays inside Sonnet's
+own context and never lands in the Opus window, your Opus week goes a lot further.
+
+Install it the same way: copy `claude-command/floor.md` into `~/.claude/commands/`, then
+edit the two spots at the top (your project paths, and your own project rules to hand the
+floor nurse). Use it like:
+
+> /floor add a confirm-on-delete dialog to the settings page in project-a
+
+The command never commits or pushes on its own; you stay in control of that. For a genuine
+head-scratcher, it will tell you to skip the loop and let Opus drive directly.
 
 ## Teaching your Claude
 
