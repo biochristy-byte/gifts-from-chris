@@ -14,6 +14,8 @@ of game-art images.
 | `claude-command/floor.md` | A slash command that makes **Sonnet do the coding and Opus review the diff**, to stretch your Opus weekly limit on Max plans. See "The floor command" below. |
 | `webdrive/cgArtBatch.js` | The preferred method: a Playwright script that drives ChatGPT through the browser's debug port (CDP). Reliable, runs in a background tab, does not fight you for the mouse. |
 | `rc_work/` | The fallback method: pure screen control (screenshot, find the button, click it). Works when CDP is not available. Has its own README with all the hard-won gotchas. |
+| `time-hook/` | A tiny hook that stamps the real local date and time on every prompt, so Claude stops guessing the date. Has its own README with the settings.json wiring. |
+| `claude-skill/tell-tab/` | A skill for safely messaging another Claude Code session in a different Windows Terminal tab, with identity verification so orders never land in the wrong tab. Copy to `~/.claude/skills/`. |
 
 ## One-time setup (do this once)
 
