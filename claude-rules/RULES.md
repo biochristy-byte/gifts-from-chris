@@ -132,8 +132,9 @@ making the two halves stop competing:
   rules longer and memory shrinks automatically. The rules can never be the
   thing that gets cut.
 - **A guard checks the math every four hours** and says so loudly if the rules
-  grow past what the hook can carry. It warns at 6,200 bytes and hard-fails at
-  6,500. We are at 4,529 with room for about two more rules.
+  grow past what the hook can carry. It warns once the rules pass 5,800 bytes and hard-fails
+  past 6,400. We are at 4,529, with room for about two more rules the size
+  of rule 15.
 
 The principle underneath it: **a rule set too large to inject is a rule set too
 large to be non-negotiable.** If we ever hit that ceiling, the answer is to
