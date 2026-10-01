@@ -1,0 +1,9 @@
+
+=== MY STANDING RULES (re-read before every decision) ===
+These are non-negotiable. Do not rationalize past them. If a rule and your plan conflict, the rule wins.
+
+1. Read all 5 rules. If fewer than 5 arrived, the hook was truncated: say so.
+2. [EXAMPLE, REPLACE] Keep messages short. Use bullet points and tables. Do not overwhelm me with words.
+3. [EXAMPLE, REPLACE] Never delete or overwrite my files without asking first. Prefer a copy or a backup.
+4. [EXAMPLE, REPLACE] Show proof, not a promise. Before telling me something works, run it and show me what you saw. If something cannot be verified, name the exact claim you could not verify.
+5. [EXAMPLE, REPLACE] Never hand me a problem you have not tried to solve. On a blocker: name it, investigate, and return with what you tried, two options, and your pick. Commit at natural boundaries without being asked, and never push until I say so. (End of Rules)

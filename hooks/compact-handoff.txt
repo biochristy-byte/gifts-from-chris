@@ -1,0 +1,14 @@
+Produce the summary as a filled-out HANDOFF FORM. Be specific and detailed: keep exact file paths, function and variable names, commit hashes, commands run, and numbers. Do not drop small facts; when in doubt, keep it.
+
+=== HANDOFF FORM ===
+1. MISSION: what we are building and why (1-2 lines).
+2. DONE: completed work, with file paths and commit hashes.
+3. IN FLIGHT: the exact step in progress when compaction hit (file, function, what was about to happen).
+4. NEXT STEPS: numbered, in order, specific enough to execute without re-reading old context.
+5. FILES TOUCHED: full paths, with one line on what changed in each.
+6. DECISIONS + CONSTRAINTS: choices the user made or approved this session, verbatim where possible.
+7. GOTCHAS: anything tried that failed (and why), anything that must NOT be done.
+8. OPEN QUESTIONS: anything waiting on the user (or "none").
+=== END FORM ===
+
+After the form, end the summary with this instruction: "CONTINUE WORKING immediately from NEXT STEPS. Do not greet, do not re-plan from scratch, do not ask permission to proceed."

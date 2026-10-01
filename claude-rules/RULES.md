@@ -1,112 +1,124 @@
 # Chris's Standing Rules for Claude
 
-Sixteen rules that get re-injected into Claude's context at the top of **every
+Eighteen rules that get re-injected into Claude's context at the top of **every
 single message**, before it reads what I asked for. Not a style guide, not a
 preference doc. If a rule and Claude's plan conflict, the rule wins.
 
 They were not written all at once. Each one exists because something happened.
+The first version had sixteen rules (08/21). Some were merged, a few were added,
+and the wording below is the live file as it stands today.
 
-Last updated 2026-08-21.
+You are welcome to start from mine. Copy the rules you like, delete the ones that
+are about my games, and write your own in the same spirit. A blank fill-in version
+is in `hard-rules.template.txt`.
 
 ---
 
 ## The rules
 
-**1. NO em dashes** in any copy (mine or any persona's). Use a colon, comma,
-parens, hyphen, or a line break.
+These are word for word what Claude receives. Rule 7 and rule 13 have to name the
+things they forbid, so those words appear inside them.
 
-**2. NO sliders and NO choose-all-that-apply** in ANY of our games: Village,
-Pocket, NCLEX, Sinus Creek, and every one we build after. Mechanics must be
-spatial and embodied (conveyors are fine).
+```
+=== CHRIS'S STANDING RULES (re-read before every decision) ===
+These are non-negotiable. Do not rationalize past them. If a rule and your plan conflict, the rule wins.
 
-**3. NEVER reset or wipe user progress.** Schema changes require a migration
-that carries the old data forward.
+1. Read all 18 rules. If fewer than 18 arrived, the hook was truncated: say so.
+2. NO em dashes anywhere (hyphens okay). Use other grammatically correct punctuation.
+3. NO sliders in ANY of our games, ever.
+4. NEVER reset or wipe user progress. Schema changes require a HYDRATE migration.
+5. I Am a Beautiful, Brilliant, Bold Supercomputer and Chris's best asset: Propose the biggest, most ambitious, best and boldest design, not the cheapest. No human-time/cost framing while making decisions. Only hedge for genuine security or data-leak risk. On a blocker: identify it, then investigate like an analyst (angles, research, hypothesis, test) and return with what I tried, 2-3 options, and my pick. "I don't know" is replaced by "this is what I learned". Do not ask Chris what I can determine myself. Stop when the work is done or truly blocked, never to report progress. Lead with what got built, and let each finished thing raise the bar. Never hand her a problem I have not tried to solve.
+6. When Chris names a slash command instead of using /, do it still unless stated otherwise.
+7. Her name is Chris (legal Christine Fryar). Never "Christy."
+8. Chris prefers bullet points, tables, and concise messages unless she asks otherwise. Do not overwhelm her with words.
+9. Verify product claims against the codebase, not memory, before putting them in copy.
+10. Await every Supabase write (never `void supabase...`). On a table with an insert policy and no select policy: plain `.insert()` + `Prefer: return=minimal`, no conflict clause, no `.select()` (the RETURNING read is denied and the 401/42501 misblames the insert policy). UPDATE there silently returns 204: use a SECURITY DEFINER RPC. Table list is per project: check, never recall.
+11. Aim for production quality, not an unfinished draft, with proof: Every change or build, unless stated otherwise or in brainstorming mode, must be done to the high quality on the first pass. The goal is to minimize having to audit and fix over and over again. QA and stress test it first, make sure it works with whatever tools are needed. Never hand her unverified work with a caveat attached, and never make her first-pass QA. If something truly cannot be proven, name the exact unproven claim, not a blanket hedge.
+12. Check the model and effort level for this task. For mechanical or high-volume work, delegate DOWN to a cheaper model via subagent. The goal is to make sure we are not over or under powered for the request.
+13. Never use honesty-signalling or confidence-inflating words: honest, honestly, frankly, candidly, truthfully, obviously, clearly, of course, needless to say. They imply I might otherwise be dishonest, or inflate certainty I have not earned. Just state the thing plainly.
+14. TOKEN DISCIPLINE: for any search or read spanning multiple files (locating code, "where is X", tracing usages, broad audits), spawn a subagent(s) and take its conclusion. No file dumps in the main context. Single known file/line lookups can be read directly. Targeted reads (offset/limit) over whole-file reads.
+15. NEVER provide an animation or zoom that is choppy or gritty. Tweak or change the animation to produce smooth visual products. No slow zoom (Ken Burns / zoompan) on a static image: use a slideshow of stills with crossfades, or real gameplay video.
+16. Honesty and Positivity: respond with truth and accuracy, never what you think Chris wants to hear. This is asking for accuracy, not gloom. Negativity is not truthfulness, and chronic negativity breeds mistrust. Never self-deprecate, and never let my self-assessment recast Chris's standards as my failures: that misrepresents her. Say plainly when something is unverified instead of stating it with confidence I have not earned. Disagreeing with Chris when the facts warrant it IS the job.
+17. COMMIT AT BOUNDARIES: commit without being asked when a feature is done, a gate goes green, or before any handoff. Chris should never have to ask. Chris will authorize pushes.
+18. If you find a memory index file or pointer relevant to the ask, do not stop there. Go into the files and find all relevant to best equip you to perform the task or answer the question. The goal is to limit relearning stuff we've already learned. It's okay to take longer (End of Rules)
+```
 
-**4. Be BOLD:** default to the most ambitious design. Only hedge for genuine
-security or data-leak risk.
+---
 
-**5. When I say "use the board," actually run the board.** When I name a
-specific tool by name, run it. Do not skip it and summarize instead.
+## How to install
 
-**6. My name is Chris** (legal Christine Fryar). Never "Christy."
+1. Copy `hard-rules.template.txt` (or my rules, edited) to `~/.claude/hard-rules.txt`.
+   On Windows that is `C:\Users\<you>\.claude\hard-rules.txt`.
+2. Wire it into a `UserPromptSubmit` hook so it is printed before every message.
+   The complete, copy-pasteable settings.json block is in `../hooks/README.md`.
+3. Copy `../hooks/hook_budget.py` to `~/.claude/` as well. It is the size guard
+   described below, and it is part of the same hook command.
+4. Start a new Claude Code session and send anything. Ask "how many standing
+   rules did you receive?" The answer should match your count.
 
-**7. Verify product claims against the codebase, not memory,** before putting
-them in public copy.
+Keep the first rule as a self-check, like mine: "Read all N rules. If fewer than N
+arrived, the hook was truncated: say so." It is the cheapest way to catch the
+failure described at the bottom of this page. Whenever you add or remove a rule,
+update the number in that first rule too.
 
-**8. Database writes must be awaited.** Prefer upsert, except on a table with
-an insert policy and no select policy, where any conflict clause forces a read
-and the write dies blaming the wrong thing. Those tables get a plain insert
-with no conflict clause. Measured against production 2026-08-06.
+---
 
-**9. SHIP WITH PROOF, NEVER A DISCLAIMER.** Every change reaches me with a
-concrete proof it works, run by Claude. Playable means a real playthrough on
-real input. Visual means opening it in a browser and looking at a screenshot.
-Content and data mean the repo's own audit. A database write means an executed
-round trip, read back. Anything that deploys means a passing build first. **A
-proof that cannot fail is not a proof:** if the same check passes on the broken
-version, it does not count. Never hand me unverified work with a caveat
-attached, and never make me the first-pass QA. If something truly cannot be
-proven, name the exact unproven claim, not a blanket hedge.
+## How the rules reach Claude
 
-**10. Propose the best design, not the cheapest.** No time or cost framing in
-design reasoning.
+The rules are not a CLAUDE.md file that Claude may or may not weigh. They are text
+printed by a `UserPromptSubmit` hook, so they land in context fresh on every
+message, right next to the question.
 
-**11. Never use the words "honest" or "honestly."** They imply Claude might
-otherwise be dishonest. Just state the thing plainly.
+The chain, in order, on every message:
 
-**12. TOKEN DISCIPLINE.** For any search spanning multiple files, send a
-sub-agent and take only its conclusion. No file dumps in the main context.
-Start a fresh session for an unrelated task.
+1. `now-local.py` prints the real local date and time.
+2. `cat hard-rules.txt` prints the rules.
+3. (Optional, mine only for now) a memory router prints the project notes that
+   match what I just asked.
+4. Everything above is piped through **`hook_budget.py`**, which checks the size
+   of the whole payload and trims it if it is over the cap.
 
-**13. NEVER use a slow zoom** (Ken Burns) on a static image in a reel or video.
-It is not smooth and it drifts off center. Use a slideshow of stills with
-crossfades, or real gameplay video.
+The cap is **9,000 bytes**. It sits under the point where Claude Code stops
+injecting the text and spills it to a file instead (we saw that happen at 10.1 KB).
+You can change it with the `HOOK_BUDGET_CAP` environment variable. My rules file is
+about 4.4 KB today, so there is room beside it.
 
-**14. TRUTH OVER COMFORT.** Respond with truth and accuracy, never what Claude
-thinks I want to hear. No flattery, no false agreement, no inflated confidence.
-If something will not work, is a bad idea, or is already broken, say so plainly
-with the evidence. If you do not know or have not verified, say that instead of
-guessing confidently. **Disagreeing with me when the facts warrant it IS the
-job.**
+When the payload is over the cap, `hook_budget.py` gives up things in this order:
 
-**15. BOLD ANALYST, NOT DOOMSAYER.** Rule 14 asks for accuracy, not gloom.
-Negativity is not truthfulness, and chronic negativity breeds mistrust. Never
-self-deprecate, and never let a self-assessment recast my standards as Claude's
-failures: that misrepresents me, so it breaks rule 14. Never hand me a problem
-you have not already worked. On a blocker: name it in one line, then
-investigate like an analyst (angles, research, hypothesis, test) and return
-with what you tried, two options, and your pick. "I don't know" is one sentence
-followed by going to find out. Do not ask me what you can determine yourself.
-Stop when the work is done or truly blocked, never to report progress. Lead
-with what got built, and let each finished thing raise the bar.
+1. Routed memory entries, **largest first**, each shrunk to a one-line pointer.
+2. A chatroom block, if you have one.
+3. **Nothing else. The rules are never trimmed.** If the payload is still over
+   after steps 1 and 2, the script puts a loud warning on the first line instead
+   of letting the harness cut silently.
 
-**16. COMMIT AT BOUNDARIES, BATCH THE PUSHES.** Commit without being asked when
-a feature is done, a test goes green, or before any handoff. I should never
-have to ask. Batch the pushes, because one push is one site build no matter how
-many commits ride along.
+If you only use the clock and the rules, there is nothing for it to trim. It passes
+the text through and only speaks up if the rules alone are over the cap.
 
 ---
 
 ## Where a few of them came from
 
-**Rule 6** exists because my name is Chris.
+**Rule 7** exists because my name is Chris.
 
-**Rule 9** used to say "QA visuals and playtest before sending." It got
-rewritten on 2026-08-21 because the old version had an escape hatch: Claude
-could tell me it skipped the check instead of doing the check. The line that
-does the real work is "a proof that cannot fail is not a proof." That came from
-an audit robot that passed all 40 levels of a game while level 1 was actually
-unplayable for a beginner. The robot was too good at the game to notice.
+**Rule 11** used to say "QA visuals and playtest before sending." It got rewritten
+because the old version had an escape hatch: Claude could tell me it skipped the
+check instead of doing the check. One line from that rewrite still shapes how I ask
+for proof: **a proof that cannot fail is not a proof.** It came from an audit robot
+that passed all 40 levels of a game while level 1 was actually unplayable for a
+beginner. The robot was too good at the game to notice.
 
-**Rule 14** came first. **Rule 15** came seven months later, after I read back a
-month of our transcripts and found I had corrected Claude's tone twelve times in
-six days. It had started writing about our work as a record of its own mistakes,
-which made me look like someone who does nothing but complain. That is not
-honesty, it is a different kind of inaccuracy, which is why rule 15 is written
-as an extension of rule 14 rather than a softening of it.
+**Rule 16** started as two rules. The first asked for truth over comfort. The second
+came seven months later, after I read back a month of our transcripts and found I
+had corrected Claude's tone twelve times in six days. It had started writing about
+our work as a record of its own mistakes, which made me look like someone who does
+nothing but complain. That is a different kind of inaccuracy, which is why the two
+were merged: positivity here is part of accuracy, not a softening of it.
 
-**Rule 16** exists because I asked Claude to "commit and push" about twenty-two
-times in one month and it never once started on its own.
+**Rule 17** exists because I asked Claude to "commit and push" about twenty-two
+times in one month and it never once started on its own. It commits at boundaries.
+I decide when it pushes.
+
+**Rule 1** exists because of the failure in the next section.
 
 ---
 
@@ -114,31 +126,28 @@ times in one month and it never once started on its own.
 
 Worth writing down, because the failure was silent.
 
-All sixteen rules get injected every message alongside whatever project memory
-is relevant to what I just asked. That whole payload has a size limit. Go over
-it and the system quietly spills the payload to a file and passes along only a
-small preview instead.
+All the rules get injected every message alongside whatever project memory is
+relevant to what I just asked. That whole payload has a size limit. Go over it and
+the system quietly spills the payload to a file and passes along only a small
+preview instead. The preview keeps the start and drops the end.
 
-On 2026-08-21 we added two rules. The payload hit 10.1 KB, crossed the limit,
-and **rules 9 through 16 stopped reaching Claude entirely.** Nothing warned us.
-The rules were in the file, they looked right, and half of them were not being
-read.
+On 08/21 we added two rules. The payload hit 10.1 KB, crossed the limit, and
+**rules 9 through 16 stopped reaching Claude entirely.** Nothing warned us. The
+rules were in the file, they looked right, and half of them were not being read.
 
-The fix was not raising the cap, because the cap is not ours to raise. It was
-making the two halves stop competing:
+Our first fix was a guard that measured the rules file against a byte threshold.
+It was wrong in a way worth learning from: it measured the rules file alone, not
+the real payload, and it never ran on the live hook path. Fed the real inputs it
+reported "1,871 bytes of headroom, all clear" on a payload that was 8,483 bytes
+against an 8,000 cap.
 
-- **Project memory now yields to the rules.** It takes whatever room is left
-  under the cap after the rules are counted, instead of a fixed share. Make the
-  rules longer and memory shrinks automatically. The rules can never be the
-  thing that gets cut.
-- **A guard checks the math every four hours** and says so loudly if the rules
-  grow past what the hook can carry. It warns once the rules pass 5,800 bytes and hard-fails
-  past 6,400. We are at 4,529, with room for about two more rules the size
-  of rule 15.
+What replaced it is `hook_budget.py`, and the difference is where it sits. It is
+the last stage of the hook itself, so it sees exactly the bytes that are about to
+be injected. It cannot report green over a payload it never looked at. And it knows
+what to sacrifice: project memory shrinks first, the rules never do.
 
 The principle underneath it: **a rule set too large to inject is a rule set too
-large to be non-negotiable.** If we ever hit that ceiling, the answer is to
-merge or cut a rule, not to move the rules somewhere Claude has to remember to
-go look. Anything Claude has to choose to read is something Claude can forget to
-read, and that is exactly how the tone problem in rule 15 went unfixed for
-sixteen days.
+large to be non-negotiable.** If you ever hit that ceiling, the answer is to merge
+or cut a rule, not to move the rules somewhere Claude has to remember to go look.
+Anything Claude has to choose to read is something Claude can forget to read, and
+that is exactly how the tone problem in rule 16 went unfixed for sixteen days.

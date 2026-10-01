@@ -1,26 +1,64 @@
 # Gifts from Chris
 
-A working recipe for getting your Claude Code to generate images through YOUR ChatGPT
-subscription, with no OpenAI API key. Claude writes the image prompts, drives your
-already-logged-in ChatGPT tab in the browser, waits for the render, downloads the image,
-and files it wherever you tell it. Chris and her Claude have used this to produce hundreds
-of game-art images.
+I build games with Claude Code, and along the way I ended up making a pile of tools
+to get past the annoying parts: a way to generate art through my ChatGPT subscription,
+a hook that stops Claude from guessing the date, a set of standing rules that Claude
+actually keeps reading, and a few more. Everything here is something I use myself,
+cleaned up so you can skip the hard parts and install it in a few minutes. Take what
+helps.
 
 ## What is in here
 
-| Folder | What it is |
-|---|---|
-| `claude-command/chatgpt-images.md` | A slash command for Claude Code. Copy it into `~/.claude/commands/` and you get `/chatgpt-images` in every session. |
-| `claude-command/floor.md` | A slash command that makes **Sonnet do the coding and Opus review the diff**, to stretch your Opus weekly limit on Max plans. See "The floor command" below. |
-| `webdrive/cgArtBatch.js` | The preferred method: a Playwright script that drives ChatGPT through the browser's debug port (CDP). Reliable, runs in a background tab, does not fight you for the mouse. |
-| `rc_work/` | The fallback method: pure screen control (screenshot, find the button, click it). Works when CDP is not available. Has its own README with all the hard-won gotchas. |
-| `time-hook/` | A tiny hook that stamps the real local date and time on every prompt, so Claude stops guessing the date. Has its own README with the settings.json wiring. |
-| `claude-skill/tell-tab/` | A skill for safely messaging another Claude Code session in a different Windows Terminal tab, with identity verification so orders never land in the wrong tab. Copy to `~/.claude/skills/`. |
+| Folder | What it does | Who it is for |
+|---|---|---|
+| [`claude-rules/`](claude-rules/RULES.md) | My 18 standing rules for Claude, the story behind them, and a blank template to write your own. They are re-injected on every message so they cannot scroll out of memory. | Anyone who is tired of repeating the same instructions to Claude. |
+| [`hooks/`](hooks/README.md) | The full hook chain: time stamp, standing rules and a size guard on every message, plus a PreCompact handoff form so compaction does not lose your place. Includes a copy-paste settings.json block. | Anyone with long Claude Code sessions or rules that matter. |
+| [`time-hook/`](time-hook/README.md) | A one-line Python script that stamps the real local date and time on every prompt. | Everyone. Claude has no clock and its guess about the date is often months old. |
+| [`claude-command/`](claude-command) | Two slash commands. `/chatgpt-images` generates images through your ChatGPT tab. `/floor` has Sonnet do the coding and Opus review the diff, to stretch an Opus weekly limit. | Image makers, and Max plan users who hit the Opus cap. |
+| [`claude-skill/tell-tab/`](claude-skill/tell-tab/SKILL.md) | A skill for safely sending a message to a Claude Code session in another Windows Terminal tab, with identity checks so the order never lands in the wrong tab. | People who run several Claude sessions at once on Windows. |
+| [`webdrive/`](webdrive/cgArtBatch.js) | A Playwright script that drives ChatGPT through the browser's debug port to generate and download images. The preferred image method. | Anyone using `/chatgpt-images`. |
+| [`rc_work/`](rc_work/README.md) | Screen-control scripts (screenshot, find the button, click it) for when the debug port is not available. Has its own list of hard-won gotchas and a safety note. | Anyone automating a GUI that has no API. Windows and PowerShell. |
+
+## Quick install
+
+1. **Install Claude Code** if you have not: https://claude.com/claude-code
+2. **Clone or download this repo.** Everything below is copy-and-edit, so there is
+   nothing to build.
+3. **Pick what you want:**
+   - Slash commands: copy the `.md` files from `claude-command/` into `~/.claude/commands/`.
+   - Skill: copy `claude-skill/tell-tab/` into `~/.claude/skills/`.
+   - Rules, time stamp and handoff: follow [`hooks/README.md`](hooks/README.md). It has
+     a complete settings.json block.
+4. **Restart Claude Code** so it picks up the new files.
+
+`~/.claude` is the folder named `.claude` in your home directory. On Windows that is
+`C:\Users\<you>\.claude`.
+
+Each folder has its own README with the details. If you would rather not read them,
+point your Claude at this repo and say "read the README and set up the parts I want."
+It will figure out the rest.
+
+## Friends' gifts
+
+Not mine, but worth having: [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal)
+is a `/goal` skill for Claude Code. You set a persistent objective and Claude keeps
+working toward it across turns. It is jthack's work and I am only pointing
+you to it, so go to the repo for the code, install steps and credit.
+
+---
+
+# Image generation through your ChatGPT subscription
+
+The longer story for `chatgpt-images`, `webdrive` and `rc_work`. This is a working
+recipe for getting your Claude Code to generate images through YOUR ChatGPT
+subscription, with no OpenAI API key. Claude writes the image prompts, drives your
+already-logged-in ChatGPT tab in the browser, waits for the render, downloads the
+image, and files it wherever you tell it. I have used it to produce hundreds of
+images for my own projects.
 
 ## One-time setup (do this once)
 
-1. **Install Claude Code** if you have not: https://claude.com/claude-code
-2. **Launch Edge (or Chrome) with the debug port open.** Close the browser fully, then run:
+1. **Launch Edge (or Chrome) with the debug port open.** Close the browser fully, then run:
 
    ```
    msedge.exe --remote-debugging-port=9222
@@ -28,10 +66,10 @@ of game-art images.
 
    Tip: make a shortcut with that flag so it is always on. Verify it worked:
    `curl http://localhost:9222/json/version` should return JSON.
-3. **Log into chatgpt.com** in that browser with an account that has image generation
+2. **Log into chatgpt.com** in that browser with an account that has image generation
    (Plus or Pro).
-4. **Install the driver dependencies.** In the `webdrive` folder: `npm init -y && npm install playwright-core`
-5. **Install the slash command.** Copy `claude-command/chatgpt-images.md` to
+3. **Install the driver dependencies.** In the `webdrive` folder: `npm init -y && npm install playwright-core`
+4. **Install the slash command.** Copy `claude-command/chatgpt-images.md` to
    `C:\Users\<you>\.claude\commands\chatgpt-images.md`. Edit the paths at the top to
    where you cloned this repo, and set your own filing folders.
 
@@ -42,8 +80,8 @@ Tell your Claude something like:
 > /chatgpt-images 3 background scenes for my kitchen remodel moodboard, save them to C:\pics
 
 Claude will write the prompts (ask it to lock a style block first if you want a consistent
-set), send each one through your ChatGPT tab, wait ~70-95 seconds per image, QA the result,
-download it, and file it. You can walk away.
+set), send each one through your ChatGPT tab, wait about 70-95 seconds per image, QA the
+result, download it, and file it. You can walk away.
 
 ## How it actually works (so you can debug it)
 
@@ -54,8 +92,9 @@ download it, and file it. You can walk away.
   login cookies apply. Your mouse stays yours the whole time.
 - **Fallback path (screen control):** the `rc_work` scripts screenshot the screen, overlay a
   coordinate grid, click the composer, paste, click the share icon, click Download. It works,
-  but coordinates drift between sessions and it needs the browser visible and in the
-  foreground. Read `rc_work/README.md` before using; the gotchas section will save you hours.
+  but coordinates are specific to your screen and drift between sessions, and it needs the
+  browser visible and in the foreground. Read `rc_work/README.md` before using; the gotchas
+  section and the safety note about the Download click will save you hours.
 
 ## Things that will bite you (short list)
 
@@ -95,3 +134,7 @@ filing, and have it keep a consistent style block across a set so the images fee
 one family.
 
 Enjoy. - Chris (and her Claude)
+
+## License
+
+MIT. See [LICENSE](LICENSE).

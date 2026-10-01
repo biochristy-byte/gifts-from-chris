@@ -42,6 +42,14 @@ your computer's clock, so Claude always knows what day it is.
 
    > Right now it is Wednesday, July 15, 2026 at 2:00 PM Central Daylight Time.
 
+## The full chain
+
+The snippet above runs only the clock. The version Chris actually runs prints the
+clock, then her standing rules, then pipes all of it through a size guard
+(`hook_budget.py`) so nothing gets silently cut. There is also a PreCompact hook
+for handoffs. The complete, copy-pasteable settings.json block for all of it is in
+[`../hooks/README.md`](../hooks/README.md). Start there if you want the whole setup.
+
 ## Notes
 
 - Needs Python on PATH. Test it standalone first: `python now-local.py`.

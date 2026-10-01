@@ -1,9 +1,9 @@
 ---
 description: Floor nurse (Sonnet) builds the task, charge nurse (Opus) reviews the diff. Stretches your Opus weekly limit on Max plans.
-argument-hint: "[the work order — what to build, and which repo/folder if not obvious]"
+argument-hint: "[the work order - what to build, and which repo/folder if not obvious]"
 ---
 
-# /floor — Sonnet builds, Opus checks
+# /floor - Sonnet builds, Opus checks
 
 <!-- EDIT after cloning: list your own project(s) so scoping is instant -->
 - Projects this can target: `C:/path/to/project-a/`, `C:/path/to/project-b/`
@@ -22,14 +22,14 @@ repo yourself. Read only the diff the floor nurse hands back.
 
 $ARGUMENTS
 
-## Step 1 — Scope it (charge nurse, cheap)
+## Step 1 - Scope it (charge nurse, cheap)
 
 - Identify the target repo/folder from the order. If it's not stated and not obvious, ask
   ONE question to pin it down.
 - Do a light scope pass only if you genuinely need to name the right files. If you already
   know roughly where the work lives, skip straight to dispatch. No deep reads here.
 
-## Step 1.5 — Write the Definition of Done (charge nurse), REQUIRED
+## Step 1.5 - Write the Definition of Done (charge nurse), REQUIRED
 
 Before dispatching, restate the order as 2 to 5 concrete, checkable acceptance criteria.
 This is the target both the floor nurse builds to and you review against. A vague order is
@@ -38,7 +38,7 @@ the number-one way this loop goes sideways, so do not skip this even when the ta
 Example: "DONE means: (1) the form rejects an empty email, (2) a valid submit writes one row,
 (3) typecheck passes, (4) the page loads and I can complete the flow without a console error."
 
-## Step 2 — Dispatch the floor nurse (Sonnet)
+## Step 2 - Dispatch the floor nurse (Sonnet)
 
 Spawn a subagent with the **Agent** tool:
 - `subagent_type: "general-purpose"`
@@ -75,27 +75,27 @@ Hand it a brief that contains, in full:
     - (f) anything you were unsure about or couldn't verify.
   - Return raw findings, not a pep talk. No filler.
 
-## Step 3 — Charge nurse review (Opus, on the diff only)
+## Step 3 - Charge nurse review (Opus, on the diff only)
 
 Read the returned diff against your project's rules and the Definition of Done. For each
 concern, be specific (file:line). Produce this report:
 
-**VERIFICATION CHECK** — Did the floor nurse actually run it, with evidence? No evidence, or
+**VERIFICATION CHECK** - Did the floor nurse actually run it, with evidence? No evidence, or
 "should work," is an automatic BOUNCE BACK: no proof it runs. Confirm build and typecheck passed.
 Also confirm it honored the no-commit / no-push rule and left a clean, reviewable tree (nothing
 committed, nothing pushed, no unrelated files reverted). If it committed or pushed, say so.
-**MEETS DEFINITION OF DONE** — go criterion by criterion; mark each met / not met.
-**SIGN-OFF** — what's clean and ready.
-**BOUNCE BACK** — defects or rule violations, each with the fix. Flag serious items plainly (a
+**MEETS DEFINITION OF DONE** - go criterion by criterion; mark each met / not met.
+**SIGN-OFF** - what's clean and ready.
+**BOUNCE BACK** - defects or rule violations, each with the fix. Flag serious items plainly (a
 broken rule, a destructive or schema change without its migration, an unrun change, a silent
 stub). Check the "faked/stubbed/skipped" list: anything load-bearing there bounces.
-**YOUR EYES (REQUIRED for anything user-facing)** — a diff review cannot settle visual
+**YOUR EYES (REQUIRED for anything user-facing)** - a diff review cannot settle visual
 correctness, a click path, or something that has to be run to be trusted. Name exactly what to
 look at and how to reach it. Do NOT call user-facing work shippable on a diff alone; the floor
 nurse's verification lowers the risk but does not replace your own check.
-**VERDICT** — one line: ship-after-check / fix-then-recheck / needs-a-decision-from-you.
+**VERDICT** - one line: ship-after-check / fix-then-recheck / needs-a-decision-from-you.
 
-## Step 4 — Offer the next move
+## Step 4 - Offer the next move
 
 If BOUNCE BACK has items, offer to send them to a **fresh** floor nurse. When you do, hand that
 nurse the original work order, the Definition of Done, the prior diff, and the specific fixes, so
