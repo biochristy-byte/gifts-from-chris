@@ -1,0 +1,11 @@
+Department,Visits,Wing,Code
+Ward A,84210,Acute,WA
+Ward B,61980,Acute,WB
+Ward C,57340,Inpatient,WC
+Ward D,41200,Inpatient,WD
+Ward E,38750,Acute,WE
+Ward F,26410,Inpatient,WF
+Ward G,19870,Inpatient,WG
+Ward H,12250,Behavioral,WH
+Ward I,9480,Behavioral,WI
+Ward J,7310,Diagnostic,WJ

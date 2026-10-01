@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lollipop viz extension - development harness</title>
+  <link rel="stylesheet" href="../src/css/lollipop.css">
+  <style>
+    /* Harness chrome only. None of this ships inside the extension. */
+    html, body { overflow: auto; background: #eef1f4; }
+    body { font: 13px/1.45 "Segoe UI", system-ui, Arial, sans-serif; color: #1b1f24; padding: 14px; }
+    .hz { max-width: 1180px; margin: 0 auto; }
+    h1 { font-size: 15px; margin: 0 0 3px; }
+    .sub { color: #5b636d; font-size: 12px; margin-bottom: 12px; }
+    .bar { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+           background: #fff; border: 1px solid #dfe3e8; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+    .fld { display: flex; flex-direction: column; gap: 4px; }
+    .fld label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #6b7280; font-weight: 600; }
+    .fld select, .fld input { height: 28px; border: 1px solid #d7dbe0; border-radius: 6px; padding: 0 7px; font: inherit; font-size: 12px; background: #fff; }
+    .fld input[type=color] { width: 40px; padding: 2px; }
+    button.hzb { height: 28px; padding: 0 11px; border: 1px solid #d7dbe0; border-radius: 6px; background: #fff; font: inherit; font-size: 12px; cursor: pointer; }
+    button.hzb:hover { background: #f4f6f8; }
+    /* The stage is deliberately resizable so resize handling can be exercised. */
+    #stage { position: relative; width: 900px; height: 520px; resize: both; overflow: hidden;
+             border: 1px solid #c9ced4; border-radius: 8px; background: #fff;
+             box-shadow: 0 2px 10px rgba(20,25,32,.07); }
+    .note { margin-top: 10px; font-size: 11.5px; color: #6b7280; }
+    .evt { margin-top: 8px; font: 11.5px ui-monospace, Consolas, monospace; color: #374151;
+           background: #fff; border: 1px solid #dfe3e8; border-radius: 6px; padding: 7px 9px; min-height: 30px; }
+  </style>
+</head>
+<body>
+<div class="hz">
+  <h1>Lollipop viz extension, development harness</h1>
+  <div class="sub">Runs the shipping extension code against a mock of the Tableau Extensions API. Drag the bottom-right corner of the stage to test resize.</div>
+
+  <div class="bar">
+    <div class="fld">
+      <label for="fx">Dataset</label>
+      <select id="fx"></select>
+    </div>
+    <div class="fld">
+      <label for="encColor">Colour shelf</label>
+      <select id="encColor">
+        <option value="Segment">Segment</option>
+        <option value="">(empty)</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label for="encLabel">Label shelf</label>
+      <select id="encLabel">
+        <option value="Note">Note</option>
+        <option value="">(empty)</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label for="wsbg">Worksheet background</label>
+      <input type="color" id="wsbg" value="#ffffff">
+    </div>
+    <div class="fld">
+      <label for="sz">Stage size</label>
+      <select id="sz">
+        <option value="900x520">900 x 520</option>
+        <option value="1280x720">1280 x 720</option>
+        <option value="640x400">640 x 400</option>
+        <option value="420x640">420 x 640 (tall)</option>
+        <option value="300x220">300 x 220 (tiny)</option>
+      </select>
+    </div>
+    <button class="hzb" id="reload">Re-read data</button>
+    <button class="hzb" id="wipe">Clear saved settings</button>
+  </div>
+
+  <div id="stage">
+    <div id="lp-root">
+      <div id="lp-chart"></div>
+    </div>
+  </div>
+
+  <div class="evt" id="evt">Tableau API calls from the extension will appear here.</div>
+  <div class="note">The mock serves summary data in 10,000 row pages and rejects a second reader opened before <code>releaseAsync</code>, so a reader leak fails loudly here instead of silently in Tableau.</div>
+</div>
+
+<script src="fixtures.js"></script>
+<script src="mock-tableau.js"></script>
+<script src="../src/js/settings-schema.js"></script>
+<script src="../src/js/palettes.js"></script>
+<script src="../src/js/format.js"></script>
+<script src="../src/js/render.js"></script>
+<script src="../src/js/settings-panel.js"></script>
+<script src="../src/js/lollipop.js"></script>
+<script>
+  (function () {
+    var fx = document.getElementById('fx');
+    Object.keys(window.LP_FIXTURES).forEach(function (k) {
+      var o = document.createElement('option');
+      o.value = k; o.textContent = window.LP_FIXTURES[k].label;
+      fx.appendChild(o);
+    });
+    fx.addEventListener('change', function () { window.LP_MOCK.setFixture(fx.value); });
+
+    document.getElementById('encColor').addEventListener('change', function () {
+      window.LP_MOCK.setEncoding('color', this.value);
+    });
+    document.getElementById('encLabel').addEventListener('change', function () {
+      window.LP_MOCK.setEncoding('label', this.value);
+    });
+    document.getElementById('wsbg').addEventListener('input', function () {
+      window.LP_MOCK.setBackground(this.value);
+    });
+    document.getElementById('sz').addEventListener('change', function () {
+      var p = this.value.split('x');
+      var st = document.getElementById('stage');
+      st.style.width = p[0] + 'px';
+      st.style.height = p[1] + 'px';
+      window.dispatchEvent(new Event('resize'));
+    });
+    document.getElementById('reload').addEventListener('click', function () {
+      window.LP.app.refreshData();
+    });
+    document.getElementById('wipe').addEventListener('click', function () {
+      window.LP_MOCK.clearSettings();
+    });
+
+    var evt = document.getElementById('evt');
+    function show (msg) { evt.textContent = new Date().toLocaleTimeString() + '  ' + msg; }
+    window.addEventListener('lp-mock-select', function (e) {
+      show('selectTuplesAsync([' + e.detail.tuples.join(', ') + '], "' + e.detail.mode + '")');
+    });
+    window.addEventListener('lp-mock-hover', function (e) {
+      show('hoverTupleAsync(' + e.detail.tuple + ')');
+    });
+
+    /* Resize observer so dragging the stage handle redraws the chart. */
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () { window.dispatchEvent(new Event('resize')); })
+        .observe(document.getElementById('stage'));
+    }
+  })();
+</script>
+</body>
+</html>

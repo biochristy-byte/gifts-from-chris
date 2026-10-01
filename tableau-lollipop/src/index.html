@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lollipop</title>
+  <link rel="stylesheet" href="css/lollipop.css">
+</head>
+<body>
+  <!-- The gear and settings panel are injected into #lp-root by the panel
+       module, so they float above the chart without taking layout space. -->
+  <div id="lp-root">
+    <div id="lp-chart"></div>
+  </div>
+
+  <!-- Tableau Extensions API. There is no official CDN for this library, and
+       a sandboxed extension cannot reach one anyway, so it is loaded from
+       lib/. It is not included in this repo: download it from Tableau's
+       extensions-api GitHub repo, see lib/README.md. -->
+  <script src="../lib/tableau.extensions.1.latest.min.js"></script>
+
+  <script src="js/settings-schema.js"></script>
+  <script src="js/palettes.js"></script>
+  <script src="js/format.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/settings-panel.js"></script>
+  <script src="js/lollipop.js"></script>
+</body>
+</html>

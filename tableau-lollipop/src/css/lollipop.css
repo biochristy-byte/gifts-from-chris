@@ -1,0 +1,375 @@
+/* Lollipop Viz Extension - styles.
+ *
+ * The chart surface is deliberately unopinionated: it inherits the worksheet
+ * background so the extension does not announce itself as a foreign object
+ * inside a Tableau dashboard. All the chrome (gear, panel) is the only styled
+ * furniture, and it sits above the chart without reserving layout space.
+ */
+
+:root {
+  --lp-ink: #1b1f24;
+  --lp-ink-soft: #555c66;
+  --lp-line: #e2e5e9;
+  --lp-surface: #ffffff;
+  --lp-surface-2: #f6f7f9;
+  --lp-accent: #1170aa;
+  --lp-danger: #c0392b;
+  --lp-shadow: 0 6px 24px rgba(16, 22, 30, 0.18);
+  --lp-radius: 8px;
+
+  /* Panel chrome. Every one of these is overwritten at runtime by
+   * LP.palettes.panelVars(), so the panel can be light, dark, matched to the
+   * chart background, or a pair of colours picked by hand. The values here are
+   * the light theme, and they are what you see before any setting is read. */
+  --lp-surface-3: #e9ecf0;
+  --lp-field: #ffffff;
+  --lp-thumb: #d6dae0;
+  --lp-switch-off: #cbd2da;
+  --lp-knob: #ffffff;
+  --lp-accent-ink: #ffffff;
+  --lp-gear-bg: rgba(255, 255, 255, 0.72);
+  --lp-scrim: rgba(20, 24, 30, 0.12);
+  --lp-panel-w: 318px;
+  --lp-gear-size: 28px;
+  --lp-gear-idle: 0.35;
+  --lp-font: "Tableau Book", "Benton Sans", "Segoe UI", system-ui, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--lp-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+#lp-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#lp-chart {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.lp-svg { display: block; }
+
+.lp-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  color: var(--lp-ink-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------------ marks */
+
+.lp-mark { cursor: default; outline: none; }
+.lp-mark.lp-dim { opacity: 0.28; }
+.lp-mark:focus-visible .lp-ball-scale { outline: none; }
+.lp-mark:focus-visible { filter: drop-shadow(0 0 0 2px var(--lp-accent)); }
+
+/* Hover growth is a transform on a wrapper group, which every SVG engine
+   transitions smoothly. Scaling geometry attributes would not. */
+.lp-ball-scale {
+  transition: transform 140ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform-origin: 0 0;
+}
+.lp-mark.lp-hover .lp-ball-scale { transform: scale(1.18); }
+.lp-mark.lp-hover { cursor: pointer; }
+
+.lp-label { pointer-events: none; user-select: none; }
+.lp-axistext text { user-select: none; }
+
+/* ------------------------------------------------------------------- gear */
+
+.lp-gear {
+  position: absolute;
+  z-index: 30;
+  width: var(--lp-gear-size);
+  height: var(--lp-gear-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--lp-gear-bg);
+  color: var(--lp-ink-soft);
+  cursor: pointer;
+  opacity: var(--lp-gear-idle);
+  transition: opacity 140ms ease, background 140ms ease, color 140ms ease, border-color 140ms ease;
+  padding: 0;
+}
+#lp-root:hover .lp-gear { opacity: 1; }
+.lp-gear:hover,
+.lp-gear:focus-visible {
+  opacity: 1;
+  background: var(--lp-surface);
+  color: var(--lp-accent);
+  border-color: var(--lp-line);
+  outline: none;
+}
+.lp-gear.active {
+  opacity: 1;
+  background: var(--lp-accent);
+  color: var(--lp-accent-ink);
+  border-color: var(--lp-accent);
+}
+/* Which corner the gear sits in. Exactly one of these is always set. */
+.lp-gear.at-tr { top: 8px; right: 8px; }
+.lp-gear.at-tl { top: 8px; left: 8px; }
+.lp-gear.at-br { bottom: 8px; right: 8px; }
+.lp-gear.at-bl { bottom: 8px; left: 8px; }
+.lp-gear svg { display: block; }
+
+/* ------------------------------------------------------------------ panel */
+
+.lp-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  background: var(--lp-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+.lp-scrim.open { opacity: 1; pointer-events: auto; }
+/* Undimmed, but still catching the click that closes the panel. */
+.lp-scrim.no-dim { background: transparent; }
+
+.lp-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 40;
+  width: min(var(--lp-panel-w), 92%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--lp-surface);
+  border-left: 1px solid var(--lp-line);
+  box-shadow: var(--lp-shadow);
+  transform: translateX(102%);
+  transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  font-size: 12px;
+  color: var(--lp-ink);
+}
+.lp-panel.open { transform: translateX(0); }
+/* Left-hand panel: mirror the edge, the border and the hidden position. */
+.lp-panel.side-left {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--lp-line);
+  transform: translateX(-102%);
+}
+.lp-panel.side-left.open { transform: translateX(0); }
+
+.lp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--lp-line);
+  flex: 0 0 auto;
+}
+.lp-panel-title { font-size: 13px; font-weight: 700; letter-spacing: 0.01em; }
+
+.lp-iconbtn {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--lp-ink-soft);
+  border-radius: 5px; cursor: pointer; padding: 0;
+}
+.lp-iconbtn:hover { background: var(--lp-surface-2); color: var(--lp-ink); }
+
+.lp-search {
+  flex: 0 0 auto;
+  margin: 10px 12px 4px;
+  padding: 6px 9px;
+  border: 1px solid var(--lp-line);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  background: var(--lp-field);
+  color: var(--lp-ink);
+}
+.lp-search::placeholder { color: var(--lp-ink-soft); opacity: 0.75; }
+.lp-search:focus { border-color: var(--lp-accent); }
+
+.lp-panel-body { flex: 1 1 auto; overflow-y: auto; padding: 6px 0 12px; }
+.lp-panel-body::-webkit-scrollbar { width: 9px; }
+.lp-panel-body::-webkit-scrollbar-thumb { background: var(--lp-thumb); border-radius: 5px; }
+
+.lp-group { border-bottom: 1px solid var(--lp-line); }
+.lp-group:last-child { border-bottom: none; }
+
+.lp-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-weight: 700;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  color: var(--lp-ink-soft);
+  cursor: pointer;
+}
+.lp-group-head:hover { background: var(--lp-surface-2); color: var(--lp-ink); }
+.lp-group-caret { transition: transform 160ms ease; transform: rotate(90deg); font-size: 15px; line-height: 1; }
+.lp-group-head.collapsed .lp-group-caret { transform: rotate(0deg); }
+
+.lp-group-body { padding: 2px 12px 10px; }
+
+.lp-row { margin-bottom: 11px; }
+.lp-row:last-child { margin-bottom: 4px; }
+.lp-row.inline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lp-row.inline .lp-row-label { margin-bottom: 0; }
+
+.lp-row-label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--lp-ink); }
+.lp-help { margin-top: 5px; font-size: 11px; line-height: 1.45; color: var(--lp-ink-soft); }
+
+/* switch */
+.lp-switch {
+  position: relative;
+  width: 34px; height: 19px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  border: none;
+  background: var(--lp-switch-off);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease;
+}
+.lp-switch.on { background: var(--lp-accent); }
+.lp-switch-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--lp-knob);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.28);
+  transition: transform 150ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.lp-switch.on .lp-switch-knob { transform: translateX(15px); }
+
+/* stepper */
+.lp-stepper {
+  display: flex; align-items: center;
+  border: 1px solid var(--lp-line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--lp-field);
+  height: 28px;
+}
+.lp-stepper input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  text-align: center;
+  font: inherit;
+  font-size: 12px;
+  padding: 0 2px;
+  outline: none;
+  background: transparent;
+  color: var(--lp-ink);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.lp-stepper input::-webkit-outer-spin-button,
+.lp-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.lp-step {
+  width: 27px; height: 100%;
+  border: none; background: var(--lp-surface-2);
+  color: var(--lp-ink-soft);
+  font-size: 14px; line-height: 1;
+  cursor: pointer; flex: 0 0 auto;
+}
+.lp-step:hover { background: var(--lp-surface-3); color: var(--lp-ink); }
+.lp-unit { font-size: 10.5px; color: var(--lp-ink-soft); padding: 0 5px; flex: 0 0 auto; }
+
+/* colour */
+.lp-color { display: flex; align-items: center; gap: 7px; }
+.lp-color input[type="color"] {
+  width: 34px; height: 28px; padding: 0;
+  border: 1px solid var(--lp-line); border-radius: 6px;
+  background: none; cursor: pointer; flex: 0 0 auto;
+}
+.lp-color input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.lp-color input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+.lp-hex {
+  flex: 1 1 auto; min-width: 0; height: 28px;
+  border: 1px solid var(--lp-line); border-radius: 6px;
+  padding: 0 8px; font: inherit; font-size: 12px;
+  font-variant-numeric: tabular-nums; text-transform: lowercase; outline: none;
+  background: var(--lp-field); color: var(--lp-ink);
+}
+.lp-hex:focus { border-color: var(--lp-accent); }
+
+/* segmented */
+.lp-seg { display: flex; border: 1px solid var(--lp-line); border-radius: 6px; overflow: hidden; }
+.lp-seg-btn {
+  flex: 1 1 0; min-width: 0;
+  padding: 6px 4px;
+  border: none; border-right: 1px solid var(--lp-line);
+  background: var(--lp-field); font: inherit; font-size: 11.5px;
+  color: var(--lp-ink-soft); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lp-seg-btn:last-child { border-right: none; }
+.lp-seg-btn:hover { background: var(--lp-surface-2); color: var(--lp-ink); }
+.lp-seg-btn.on { background: var(--lp-accent); color: var(--lp-accent-ink); }
+
+/* select + text */
+.lp-select, .lp-text {
+  width: 100%; height: 28px;
+  border: 1px solid var(--lp-line); border-radius: 6px;
+  padding: 0 8px; font: inherit; font-size: 12px;
+  background: var(--lp-field); outline: none;
+  color: var(--lp-ink);
+}
+.lp-select:focus, .lp-text:focus { border-color: var(--lp-accent); }
+
+/* footer */
+.lp-panel-foot {
+  flex: 0 0 auto;
+  display: flex; gap: 6px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--lp-line);
+  background: var(--lp-surface-2);
+}
+.lp-btn {
+  flex: 1 1 0;
+  padding: 6px 4px;
+  border: 1px solid var(--lp-line); border-radius: 6px;
+  background: var(--lp-field); font: inherit; font-size: 11.5px;
+  color: var(--lp-ink); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lp-btn:hover { background: var(--lp-surface-2); }
+.lp-btn.danger { border-color: var(--lp-danger); color: var(--lp-danger); }
+
+.lp-empty-search { padding: 18px 14px; color: var(--lp-ink-soft); font-size: 12px; }
+
+/* Respect a reduced-motion preference: no transitions, no tweening chrome. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-panel, .lp-scrim, .lp-ball-scale, .lp-switch, .lp-switch-knob, .lp-group-caret {
+    transition: none !important;
+  }
+}

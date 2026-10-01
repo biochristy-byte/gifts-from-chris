@@ -1,0 +1,9 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+dist/
+
+# Tableau library: download it yourself, see lib/README.md
+lib/*.js
+lib/*.map

@@ -18,6 +18,9 @@ helps.
 | [`claude-skill/tell-tab/`](claude-skill/tell-tab/SKILL.md) | A skill for safely sending a message to a Claude Code session in another Windows Terminal tab, with identity checks so the order never lands in the wrong tab. | People who run several Claude sessions at once on Windows. |
 | [`webdrive/`](webdrive/cgArtBatch.js) | A Playwright script that drives ChatGPT through the browser's debug port to generate and download images. The preferred image method. | Anyone using `/chatgpt-images`. |
 | [`rc_work/`](rc_work/README.md) | Screen-control scripts (screenshot, find the button, click it) for when the debug port is not available. Has its own list of hard-won gotchas and a safety note. | Anyone automating a GUI that has no API. Windows and PowerShell. |
+| [`screen-control/`](screen-control/README.md) | The newer, safer screen tool: one PowerShell file for screenshots, clicks, typing and pasting in real pixels, with a selftest that proves the numbers are true on your display. | Anyone letting Claude see and click their screen on Windows. |
+| [`claude-in-edge/`](claude-in-edge/README.md) | How my Claude drives my browser: an Edge shortcut with a debug port on its own profile, Playwright MCP setup, a port checker, a login seeder, and the gotchas that cost me hours. | Anyone who wants Claude working in a browser without taking over the mouse. |
+| [`tableau-lollipop/`](tableau-lollipop/README.md) | A lollipop chart viz extension I built for Tableau, with a settings panel. Includes what else you need to run it. | Tableau Desktop users who want a chart Tableau does not ship. |
 
 ## Quick install
 
@@ -29,6 +32,7 @@ helps.
    - Skill: copy `claude-skill/tell-tab/` into `~/.claude/skills/`.
    - Rules, time stamp and handoff: follow [`hooks/README.md`](hooks/README.md). It has
      a complete settings.json block.
+   - Browser, screen and Tableau tools: each folder's README walks you through it.
 4. **Restart Claude Code** so it picks up the new files.
 
 `~/.claude` is the folder named `.claude` in your home directory. On Windows that is
