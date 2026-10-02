@@ -1,0 +1,4 @@
+.env
+inbox/
+.slack-cursor*
+__pycache__/
