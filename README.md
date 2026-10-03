@@ -45,10 +45,26 @@ It will figure out the rest.
 
 ## Friends' gifts
 
-Not mine, but worth having: [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal)
-is a `/goal` skill for Claude Code. You set a persistent objective and Claude keeps
-working toward it across turns. It is jthack's work and I am only pointing
-you to it, so go to the repo for the code, install steps and credit.
+Not mine, but worth having. These are other people's work and I am only pointing
+you to them, so go to each repo for the code, install steps and credit.
+
+- [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal) is a `/goal`
+  skill for Claude Code. You set a persistent objective and Claude keeps working
+  toward it across turns.
+- [github.com/jarrodwatts/claude-hud](https://github.com/jarrodwatts/claude-hud) by
+  Jarrod Watts is my context watch. It is a status line under your prompt that shows
+  how full Claude's context is, your usage limits, and the tools and agents running
+  right now. Install it from inside Claude Code:
+
+  ```
+  /plugin marketplace add jarrodwatts/claude-hud
+  /plugin install claude-hud
+  /reload-plugins
+  /claude-hud:setup
+  ```
+
+  On Windows, setup needs Node.js. If it says no JavaScript runtime was found, run
+  `winget install OpenJS.NodeJS.LTS`, restart your shell, and run setup again.
 
 ---
 
