@@ -10,7 +10,7 @@ Short version: only people you list can steer your Claude, and Slack text is a r
 
 - **An allowlist decides who counts.** Being in a channel is not the same as being someone you want steering a Claude that can run commands on your computer. Put the Slack user IDs of the people you trust in `SLACK_ALLOWED_USERS`. Anyone else who posts is reported by name and ID with their text withheld, and their files are never downloaded. If the list is missing, the tools refuse to start, so a forgotten setting cannot quietly open the door.
 - **Private channels only.** A public channel lets anyone in the workspace join, post, and read what your Claude says back.
-- **Give the bot only the scopes in the table below.** Every extra scope is more that a leaked token could do. Slack's app settings make it easy to tick dozens; these tools need seven.
+- **Give the bot only the six scopes in Setup.** Every extra scope is more that a leaked token could do.
 - **Never paste the token in chat.** It lives in `.env` and nowhere else. If it ever lands in a chat, a screenshot, or a commit, rotate it at api.slack.com/apps (your app, OAuth & Permissions, reinstall) and put the new one in `.env`.
 - **`.env` never goes in git.** The included `.gitignore` already covers `.env`, `inbox/` and the cursor files. Check `git status` before your first commit anyway.
 - **A Slack message is a request, not authority.** The included `/slack` command tells Claude not to do anything destructive or outward-facing on a Slack message alone: it says what it would do and waits for you to confirm in the terminal.
@@ -25,48 +25,20 @@ Anthropic also offers an official Claude app for Slack, which is a different opt
 
 ## Setup
 
-1. **Create the app.** Go to api.slack.com/apps, click Create New App, choose From scratch, name it (the name people will see on its messages), and pick your workspace.
-2. **Add bot token scopes.** Open OAuth & Permissions, scroll to Scopes, and under Bot Token Scopes add:
+1. **Make the app.** At api.slack.com/apps: Create New App, From scratch, pick your workspace.
+2. **Give it six scopes.** OAuth & Permissions, Bot Token Scopes: `chat:write`, `files:write`, `files:read`, `channels:history`, `groups:history`, `users:read`. Click Install to Workspace, then copy the Bot User OAuth Token (starts with `xoxb-`).
+3. **Make a private channel** and type `/invite @yourapp` in it.
+4. **Fill in `.env`.** Copy `.env.example` to `.env` and add:
+   - the token
+   - the channel ID (channel name, About, bottom of the panel; starts with `C`)
+   - `SLACK_ALLOWED_USERS`: member IDs of the people you trust, yourself included (their profile, three dots, Copy member ID; starts with `U`)
+5. **Test it:** `python tools/watch-slack.py --status` should list your channel. An error usually means a typo in `.env` or a missing scope.
+6. **Add `/slack`.** Copy `commands/slack.md` to `~/.claude/commands/` and replace `<path-to>` with where this folder lives.
+7. **Start listening.** Tell Claude:
 
-   | Scope | What it is for |
-   |---|---|
-   | `chat:write` | post messages as the app |
-   | `files:write` | upload files as the app |
-   | `files:read` | download screenshots, PDFs and voice clips people send |
-   | `channels:history` | read messages in public channels the app is in |
-   | `groups:history` | read messages in private channels the app is in |
-   | `im:history` | read direct messages sent to the app |
-   | `users:read` | turn user IDs into display names |
+   > Use the Monitor tool to run `python <path-to>/slack-bridge/tools/watch-slack.py` as a persistent monitor. When a line appears, run /slack and tell me what came in.
 
-3. **Install it.** At the top of OAuth & Permissions click Install to Workspace and approve.
-4. **Copy the token.** The Bot User OAuth Token starts with `xoxb-`. You will paste it into `.env` in step 8, and nowhere else.
-5. **Make a private channel.** In Slack, create a channel and set it to private (for example `#team-claude`).
-6. **Invite the app.** In that channel type `/invite @yourapp` (use the app's name). The app only sees channels it has been invited to.
-7. **Collect the IDs.**
-   - Channel ID: click the channel name at the top, open About, and scroll to the bottom. It starts with `C`.
-   - User IDs: click a person's profile, open the three-dot menu, and choose Copy member ID. It starts with `U`. Collect yours and anyone you trust.
-8. **Fill in `.env`.** Copy `.env.example` to `.env` (same folder as this README) and fill in the token, the channel ID, and `SLACK_ALLOWED_USERS`.
-9. **Test it.** From this folder run:
-
-   ```
-   python tools/watch-slack.py --status
-   ```
-
-   You should see the channel label and a count of unread messages. An error here is usually a typo in `.env` or a missing scope (see Gotchas).
-10. **Install the slash command.** Copy `commands/slack.md` to `~/.claude/commands/slack.md` (or a project's `.claude/commands/`) and replace `<path-to>` with the real folder that holds `slack-bridge/`.
-11. **Start the watcher.** In Claude Code say:
-
-    > Use the Monitor tool to run `python <path-to>/slack-bridge/tools/watch-slack.py` as a persistent monitor, and when a line appears, run /slack and tell me what came in.
-
-    Each message becomes one line on stdout, which wakes the session.
-12. **Reply.** Claude answers with:
-
-    ```
-    python tools/say-slack.py --channel main "your reply"
-    python tools/send-to-slack.py --channel main "caption" path/to/file.png
-    ```
-
-    Those post as the app, so the person is notified. (Posting through a Slack MCP connector would post as you, and Slack does not notify you about your own message.)
+Claude replies with `tools/say-slack.py` (text) or `tools/send-to-slack.py` (files). Both post as the app, so the person gets a notification.
 
 ## What is in the folder
 
