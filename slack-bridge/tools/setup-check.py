@@ -15,6 +15,7 @@ Stdlib only, no pip deps.
 import json
 import re
 import sys
+import textwrap
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -130,11 +131,13 @@ def check_scopes(scopes) -> None:
              "slack-app-manifest.yml.")
     else:
         ok(f"All six are there: {', '.join(NEEDED)}.")
+    # Extra scopes are the owner's choice, so they are labeled, never counted
+    # as a problem or a note.
     extra = sorted(granted - set(NEEDED))
     if extra:
-        shown = ", ".join(extra[:8]) + (", ..." if len(extra) > 8 else "")
-        note(f"{len(extra)} more scope(s) than the tools need ({shown}). They "
-             "still work, but every extra scope is more that a leaked token could do.")
+        print(f"  EXTRA {len(extra)} scope(s) the tools do not use, kept by choice:")
+        for line in textwrap.wrap(", ".join(extra), 70):
+            print(f"        {line}")
 
 
 def check_channels(env: dict, token: str) -> None:
