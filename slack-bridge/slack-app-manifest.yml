@@ -1,0 +1,26 @@
+# Paste this at api.slack.com/apps: Create New App, From a manifest.
+# It makes the app with exactly the six scopes the tools use, nothing more.
+# Rename it first if you like: change "name" and "display_name" below.
+# display_name may only use lowercase letters, numbers, - _ and .
+
+display_information:
+  name: Claude Bridge
+  description: Lets the people you trust message your Claude Code session.
+features:
+  bot_user:
+    display_name: claude
+    always_online: false
+oauth_config:
+  scopes:
+    bot:
+      - chat:write
+      - files:write
+      - files:read
+      - channels:history
+      - groups:history
+      - users:read
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  # Off on purpose: a rotating token would expire out from under .env.
+  token_rotation_enabled: false

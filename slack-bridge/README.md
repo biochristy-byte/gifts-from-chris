@@ -25,15 +25,15 @@ Anthropic also offers an official Claude app for Slack, which is a different opt
 
 ## Setup
 
-1. **Make the app.** At api.slack.com/apps: Create New App, From scratch, pick your workspace.
-2. **Give it six scopes.** OAuth & Permissions, Bot Token Scopes: `chat:write`, `files:write`, `files:read`, `channels:history`, `groups:history`, `users:read`. Click Install to Workspace, then copy the Bot User OAuth Token (starts with `xoxb-`).
-3. **Make a private channel** and type `/invite @yourapp` in it.
+1. **Make the app from the manifest.** At api.slack.com/apps: Create New App, From a manifest, pick your workspace, paste in `slack-app-manifest.yml`, then Create. That sets up the app with the six scopes the tools use: `chat:write`, `files:write`, `files:read`, `channels:history`, `groups:history`, `users:read`. To rename it, edit `name` and `display_name` in the file before you paste.
+2. **Install it.** In OAuth & Permissions, click Install to Workspace, then Allow. Copy the Bot User OAuth Token (starts with `xoxb-`). If the button says Request to Install, a workspace admin has to approve it first.
+3. **Make a private channel,** type `/invite @` in it, and pick your app from the list.
 4. **Fill in `.env`.** Copy `.env.example` to `.env` and add:
    - the token
    - the channel ID (channel name, About, bottom of the panel; starts with `C`)
    - `SLACK_ALLOWED_USERS`: member IDs of the people you trust, yourself included (their profile, three dots, Copy member ID; starts with `U`)
-5. **Test it:** `python tools/watch-slack.py --status` should list your channel. An error usually means a typo in `.env` or a missing scope.
-6. **Add `/slack`.** Copy `commands/slack.md` to `~/.claude/commands/` and replace `<path-to>` with where this folder lives.
+5. **Add `/slack`.** Copy `commands/slack.md` to `~/.claude/commands/` and replace `<path-to>` with where this folder lives.
+6. **Check everything:** `python tools/setup-check.py`. It only reads, never posts. It tests the token, the scopes, every channel, every person on your list, and `/slack`, and each problem names the step that fixes it. Fix the first one and run it again until it says All set.
 7. **Start listening.** Tell Claude:
 
    > Use the Monitor tool to run `python <path-to>/slack-bridge/tools/watch-slack.py` as a persistent monitor. When a line appears, run /slack and tell me what came in.
@@ -48,8 +48,10 @@ Claude replies with `tools/say-slack.py` (text) or `tools/send-to-slack.py` (fil
 | `tools/check-slack.py` | Reads the full messages, thread replies, and files (saved to `inbox/<date>/`), then advances the cursor. `--peek` reads without advancing, `--hours 48` looks back. |
 | `tools/say-slack.py` | Posts text as the app. `--thread <ts>` replies in a thread, `--text-file` reads a long message from a file. |
 | `tools/send-to-slack.py` | Uploads one or more files with a caption. |
+| `tools/setup-check.py` | Tests your whole setup, read only, and names the step that fixes each problem. Run it any time something stops working. |
 | `tools/slack_channels.py` | Reads channels and the allowlist from `.env`. |
 | `commands/slack.md` | The `/slack` command for Claude Code. |
+| `slack-app-manifest.yml` | Paste-in app settings: the name and the six scopes. |
 
 More channels: add `SLACK_CHANNEL_<LABEL>=C...` to `.env`, then use `--channel <label>`. Each channel keeps its own cursor.
 
@@ -60,5 +62,5 @@ More channels: add `SLACK_CHANNEL_<LABEL>=C...` to `.env`, then use `--channel <
 - **The watcher only announces.** It does not advance the cursor or download files. `check-slack.py` (and so `/slack`) does that.
 - **Long posts split.** Slack breaks messages over about 3,700 characters into two. If you are checking delivery, read every message after the returned timestamp, not just the last one.
 - **Windows consoles are cp1252.** An arrow, an emoji or a curly quote can crash a script mid-run. The scripts already switch to UTF-8. For long text with punctuation, use `--text-file`.
-- **`missing_scope`.** A scope was removed or never added. Add the one the error names under OAuth & Permissions, then click Reinstall to Workspace.
+- **`missing_scope`.** A scope was removed or never added. Add the one the error names under OAuth & Permissions, then click Reinstall to Workspace. `tools/setup-check.py` lists every missing one at once.
 - **Restart after changing `.env` or the scripts.** A running watcher keeps the old settings until it is restarted.
