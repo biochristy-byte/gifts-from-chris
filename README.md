@@ -15,7 +15,6 @@ helps.
 | [`hooks/`](hooks/README.md) | The full hook chain: time stamp, standing rules and a size guard on every message, plus a PreCompact handoff form so compaction does not lose your place. Includes a copy-paste settings.json block. | Anyone with long Claude Code sessions or rules that matter. |
 | [`time-hook/`](time-hook/README.md) | A one-line Python script that stamps the real local date and time on every prompt. | Everyone. Claude has no clock and its guess about the date is often months old. |
 | [`claude-command/`](claude-command) | Two slash commands. `/chatgpt-images` generates images through your ChatGPT tab. `/floor` has Sonnet do the coding and Opus review the diff, to stretch an Opus weekly limit. | Image makers, and Max plan users who hit the Opus cap. |
-| [`claude-skill/tell-tab/`](claude-skill/tell-tab/SKILL.md) | A skill for safely sending a message to a Claude Code session in another Windows Terminal tab, with identity checks so the order never lands in the wrong tab. | People who run several Claude sessions at once on Windows. |
 | [`webdrive/`](webdrive/cgArtBatch.js) | A Playwright script that drives ChatGPT through the browser's debug port to generate and download images. The preferred image method. | Anyone using `/chatgpt-images`. |
 | [`rc_work/`](rc_work/README.md) | Screen-control scripts (screenshot, find the button, click it) for when the debug port is not available. Has its own list of hard-won gotchas and a safety note. | Anyone automating a GUI that has no API. Windows and PowerShell. |
 | [`screen-control/`](screen-control/README.md) | The newer, safer screen tool: one PowerShell file for screenshots, clicks, typing and pasting in real pixels, with a selftest that proves the numbers are true on your display. | Anyone letting Claude see and click their screen on Windows. |
@@ -30,7 +29,6 @@ helps.
    nothing to build.
 3. **Pick what you want:**
    - Slash commands: copy the `.md` files from `claude-command/` into `~/.claude/commands/`.
-   - Skill: copy `claude-skill/tell-tab/` into `~/.claude/skills/`.
    - Rules, time stamp and handoff: follow [`hooks/README.md`](hooks/README.md). It has
      a complete settings.json block.
    - Browser, screen and Tableau tools: each folder's README walks you through it.
