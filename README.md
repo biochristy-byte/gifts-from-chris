@@ -19,6 +19,7 @@ helps.
 | [`rc_work/`](rc_work/README.md) | Screen-control scripts (screenshot, find the button, click it) for when the debug port is not available. Has its own list of hard-won gotchas and a safety note. | Anyone automating a GUI that has no API. Windows and PowerShell. |
 | [`screen-control/`](screen-control/README.md) | The newer, safer screen tool: one PowerShell file for screenshots, clicks, typing and pasting in real pixels, with a selftest that proves the numbers are true on your display. | Anyone letting Claude see and click their screen on Windows. |
 | [`claude-in-edge/`](claude-in-edge/README.md) | How my Claude drives my browser: an Edge shortcut with a debug port on its own profile, Playwright MCP setup, a port checker, a login seeder, and the gotchas that cost me hours. | Anyone who wants Claude working in a browser without taking over the mouse. |
+| [`parallel-browsers/`](parallel-browsers/README.md) | Lets many Claude Code tabs run browser tests at the same time. Each tab gets its own isolated Playwright browser seeded with only the logins you allow, plus a proof script that reproduces the old "browser already in use" failure first. | Anyone running several Claude tabs that all need a browser. |
 | [`slack-bridge/`](slack-bridge/README.md) | How my collaborators talk to my Claude from Slack: a bot that replies with a real notification, a watcher that wakes Claude when someone writes, and an allowlist so only people you name get through. | Anyone who wants their team, or their phone, talking to their Claude. |
 | [`tableau-lollipop/`](tableau-lollipop/README.md) | A lollipop chart viz extension I built for Tableau, with a settings panel. Includes what else you need to run it. | Tableau Desktop users who want a chart Tableau does not ship. |
 
@@ -31,6 +32,8 @@ helps.
    - Slash commands: copy the `.md` files from `claude-command/` into `~/.claude/commands/`.
    - Rules, time stamp and handoff: follow [`hooks/README.md`](hooks/README.md). It has
      a complete settings.json block.
+   - Several Claude tabs sharing one browser: follow
+     [`parallel-browsers/README.md`](parallel-browsers/README.md).
    - Browser, screen and Tableau tools: each folder's README walks you through it.
 4. **Restart Claude Code** so it picks up the new files.
 

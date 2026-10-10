@@ -63,6 +63,9 @@ Add it to Claude Code (this writes to your user config):
 claude mcp add playwright --scope user -- npx -y @playwright/mcp@latest --browser msedge --user-data-dir "C:/Users/<you>/.claude-browser-profile"
 ```
 
+Running several Claude tabs at once? One shared profile locks to one process, so the second tab
+fails. Those tabs need `--isolated`; see [`../parallel-browsers/README.md`](../parallel-browsers/README.md).
+
 Or paste it into `~/.claude.json` (`C:\Users\<you>\.claude.json`) under `mcpServers`. Forward
 slashes in the path, and replace `<you>` with your Windows user name:
 

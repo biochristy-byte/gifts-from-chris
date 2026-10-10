@@ -1,0 +1,8 @@
+# Saved logins and cookie backups never get committed.
+*storage-state*.json
+*cookie-backups*/
+Cookies-*
+Cookies
+*.sqlite
+__pycache__/
+*.pyc
