@@ -21,9 +21,7 @@ helps.
 | [`claude-in-edge/`](claude-in-edge/README.md) | How my Claude drives my browser: an Edge shortcut with a debug port on its own profile, Playwright MCP setup, a port checker, a login seeder, and the gotchas that cost me hours. | Anyone who wants Claude working in a browser without taking over the mouse. |
 | [`parallel-browsers/`](parallel-browsers/README.md) | Lets many Claude Code tabs run browser tests at the same time. Each tab gets its own isolated Playwright browser seeded with only the logins you allow, plus a proof script that reproduces the old "browser already in use" failure first. | Anyone running several Claude tabs that all need a browser. |
 | [`slack-bridge/`](slack-bridge/README.md) | How my collaborators talk to my Claude from Slack: a bot that replies with a real notification, a watcher that wakes Claude when someone writes, and an allowlist so only people you name get through. | Anyone who wants their team, or their phone, talking to their Claude. |
-| [`tableau-lollipop/`](tableau-lollipop/README.md) | A lollipop chart viz extension I built for Tableau, with a settings panel. Includes what else you need to run it. | Tableau Desktop users who want a chart Tableau does not ship. |
-| [`tableau-garden-petals/`](tableau-garden-petals/README.md) | A second viz extension: one flower per row, one petal per category, with a grid, a garden map and an altitude view. Ships a strict mock of the Extensions API, a packager and Tableau test drivers that refuse to send Ctrl+S. | Tableau users who want a chart Tableau does not ship, and anyone writing their own extension who wants a worked example. |
-| [`tableau-knowledge/`](tableau-knowledge/README.md) | Everything I learned building Tableau with Claude: 35 dashboard design rules, the pipeline for generating workbooks, a catalogue of silent `.twb` XML traps, viz extension limits, a chart technique library, and a `/tableau-scrubs` slash command. | Anyone using Claude to build Tableau dashboards, workbooks or extensions. |
+| [C-Tableau](https://github.com/biochristy-byte/C-Tableau) | Everything Tableau, in its own repo: 39 dashboard design rules, the pipeline for generating workbooks, silent `.twb` XML traps, Andy Kriebel, ATUG and Iron Viz lessons, two viz extensions (Garden Petals and Lollipop), and a step-by-step rebuild of the PISA flower garden. | Anyone building Tableau work with Claude. |
 
 ## Quick install
 
@@ -36,9 +34,9 @@ helps.
      a complete settings.json block.
    - Several Claude tabs sharing one browser: follow
      [`parallel-browsers/README.md`](parallel-browsers/README.md).
-   - Tableau work: follow [`tableau-knowledge/README.md`](tableau-knowledge/README.md); it has
+   - Tableau work: follow [C-Tableau](https://github.com/biochristy-byte/C-Tableau); its `tableau-knowledge/README.md` has
      a slash command to copy into `~/.claude/commands/`.
-   - Browser, screen and Tableau tools: each folder's README walks you through it.
+   - Browser and screen tools: each folder's README walks you through it.
 4. **Restart Claude Code** so it picks up the new files.
 
 `~/.claude` is the folder named `.claude` in your home directory. On Windows that is
