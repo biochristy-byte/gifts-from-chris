@@ -32,10 +32,14 @@ runs in the free edition of Tableau Desktop.
 | **Node.js** (or Python 3) | The extension is a web page, and Tableau loads it from a local server. Node runs the one in this project. `python -m http.server` works as a stand-in, see below. |
 | **One file from Tableau** | The Extensions API library, `tableau.extensions.1.latest.min.js`. It is Tableau's, so it is not in this folder. [lib/README.md](lib/README.md) shows where to get it. |
 
-**Tableau Public cannot run viz extensions.** That is a Tableau limit, not
-something this extension can change. A workbook that uses Lollipop cannot be
-published to a Tableau Public profile. It works in Tableau Desktop, and in
-Tableau Server and Cloud.
+**Tableau Public is not proven for a self-hosted extension.** Tableau's
+Public FAQ says Public supports viz extensions (pick "Works with Tableau
+Public", or "Access Local Viz Extensions" for a `.trex` you have). Whether a
+self-hosted `.trex` like this one loads, publishes and renders for public
+viewers has not been tested here. Publishing also needs Settings > Allow Access
+so the extension can read the visible data, and the extension must be reachable
+at an HTTPS address. It works in Tableau Desktop. Details:
+[../tableau-knowledge/viz-extensions.md](../tableau-knowledge/viz-extensions.md).
 
 ## Install
 
@@ -114,7 +118,7 @@ edit it, remove the extension and add it again.
 | Server says the address is in use | Something else holds the port. Pick another and change it in all three places (step 2). |
 | Blank, and the browser console says "Tableau Extensions API not present" | `lib/tableau.extensions.1.latest.min.js` is missing. See [lib/README.md](lib/README.md). |
 | "Drop a dimension on Category and a measure on Value." | Working. It needs fields on those two shelves. |
-| Extension is not in the Marks card menu | Tableau is older than 2024.2, or it is Tableau Public. |
+| Extension is not in the Marks card menu | Tableau is older than 2024.2. |
 | It worked, then went blank | The server stopped. The extension is a live page, not a copy baked into the workbook. |
 | Blank in a PDF or PowerPoint export | Tableau draws all viz extensions blank in those exports. |
 | Tableau will not accept the manifest | Check that `lollipop.trex` is still valid XML, and that the `author` line still has a `name` and an HTTPS `website` (Tableau requires both; `email` is optional). |
@@ -123,6 +127,10 @@ If someone else opens your workbook, they need the extension reachable at the
 same URL that is saved in it. On `localhost` that means each person runs their
 own server. Hosting it once at an HTTPS address everyone can reach is what makes
 a workbook shareable. Plain HTTP is accepted for `localhost` only.
+
+The GUI drivers I used to test this inside real Tableau (screenshot, click,
+drag a field to a shelf, with a guard that refuses Ctrl+S) live in
+[../tableau-garden-petals/tools](../tableau-garden-petals/tools/).
 
 ## Try it without Tableau
 

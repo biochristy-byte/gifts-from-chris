@@ -1,0 +1,9 @@
+node_modules/
+*.log
+_shots/
+shots/
+dist/
+__pycache__/
+# Tableau library: download it yourself, see lib/README.md
+lib/*.js
+lib/*.map
