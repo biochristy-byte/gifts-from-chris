@@ -136,13 +136,13 @@
     '.gs-row .full{grid-column:1/3}',
     '.gs-help{grid-column:1/3;font-size:11.5px;color:#6a7488}',
     '.gs-row textarea{box-sizing:border-box;width:100%;border:1px solid #cdd2dd;border-radius:8px;padding:6px 8px;font:inherit;background:#fff;color:#1c2330;resize:vertical;min-width:0}.gs-row select,.gs-row input[type=text],.gs-row input[type=number]{box-sizing:border-box;width:100%;border:1px solid #cdd2dd;border-radius:8px;padding:6px 8px;font:inherit;background:#fff;color:#1c2330;min-width:0}',
-    '.gs-num{display:flex;gap:8px;align-items:center}.gs-num input[type=range]{flex:1;min-width:0;accent-color:#2a76d2}.gs-num output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:#394154}',
+    '.gs-num{display:flex;gap:8px;align-items:center}.gs-num input[type=number]{flex:1;min-width:0;box-sizing:border-box;border:1px solid #cdd2dd;border-radius:8px;padding:5px 8px;font:13px Poppins,sans-serif}.gs-num output{min-width:24px;font-variant-numeric:tabular-nums;color:#394154}',
     '.gs-row input[type=color]{width:46px;height:28px;border:1px solid #cdd2dd;border-radius:6px;padding:0;background:#fff}',
     '.gs-row input[type=checkbox]{width:16px;height:16px;accent-color:#2a76d2}',
     '.gs-pet{display:grid;grid-template-columns:minmax(0,1fr) 34px 28px 28px;gap:6px;align-items:center;grid-column:1/3}',
     '.gs-pet input[type=text]{padding:5px 7px}.gs-pet button{border:1px solid #cdd2dd;background:#fff;border-radius:6px;height:28px;cursor:pointer;font-size:13px;color:#1c2330}',
     '.gs-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid #e3e6ee;background:#f7f7fb}',
-    '.gs-link{border:0;background:none;color:#b3261e;font:600 12px Poppins,sans-serif;cursor:pointer;padding:6px 0}',
+    '.gs-paste{display:flex;gap:8px;padding:8px 14px 0}.gs-paste textarea{flex:1;box-sizing:border-box;border:1px solid #cdd2dd;border-radius:8px;padding:6px 8px;font:12px monospace;min-width:0}.gs-link{border:0;background:none;color:#b3261e;font:600 12px Poppins,sans-serif;cursor:pointer;padding:6px 0}',
     '.gs-btn{border:1px solid #cdd2dd;background:#fff;border-radius:8px;padding:6px 12px;font:600 12px Poppins,sans-serif;cursor:pointer;color:#1c2330}',
     '.gs-diag{grid-column:1/3;white-space:pre-wrap;font:11px/1.5 Consolas,monospace;background:#f1f3f8;border-radius:8px;padding:10px;max-height:300px;overflow:auto;color:#1c2330}',
     '.gs-panel button:focus-visible,.gs-panel select:focus-visible,.gs-panel input:focus-visible{outline:2px solid #2a76d2;outline-offset:1px}'
@@ -150,6 +150,7 @@
 
   function create(host, api) {
     var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+    var pasteOn = false;
     var gear = document.createElement('button'); gear.className = 'gs-gear'; gear.type = 'button'; gear.title = 'Petal chart settings'; gear.setAttribute('aria-label', 'Open settings'); gear.innerHTML = '&#9881;';
     var panel = document.createElement('div'); panel.className = 'gs-panel'; panel.hidden = true; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Petal chart settings');
     host.appendChild(gear); host.appendChild(panel);
@@ -166,7 +167,7 @@
         if (r.sec !== lastSec) { html += '<div class="gs-sec">' + esc(r.sec) + '</div>'; lastSec = r.sec; }
         html += '<div class="gs-row">' + control(r, s, info) + (r.help ? '<div class="gs-help">' + esc(r.help) + '</div>' : '') + '</div>';
       });
-      html += '</div><div class="gs-foot"><button class="gs-link" data-x="reset" type="button">Reset to defaults</button><button class="gs-btn" data-x="copy" type="button">Copy settings</button></div>';
+      html += '</div>' + (pasteOn ? '<div class="gs-paste"><textarea id="gs-pastebox" rows="3" placeholder="Paste copied settings here"></textarea><button class="gs-btn" data-x="pasteapply" type="button">Apply</button></div><div class="gs-help" id="gs-pastemsg"></div>' : '') + '<div class="gs-foot"><button class="gs-link" data-x="reset" type="button">Reset to defaults</button><button class="gs-btn" data-x="paste" type="button">Paste settings</button><button class="gs-btn" data-x="copy" type="button">Copy settings</button></div>';
       var keepScroll = panel.querySelector('.gs-body'); var sc = keepScroll ? keepScroll.scrollTop : 0;
       panel.innerHTML = html;
       var b = panel.querySelector('.gs-body'); if (b) b.scrollTop = sc;
@@ -177,7 +178,7 @@
       var lab = r.label ? '<label for="' + id + '">' + esc(r.label) + '</label>' : '';
       switch (r.type) {
         case 'select': return lab + '<select id="' + id + '" data-p="' + r.path + '">' + r.opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (String(o[0]) === String(v) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>';
-        case 'number': return lab + '<div class="gs-num"><input type="range" id="' + id + '" data-p="' + r.path + '" data-t="num" min="' + r.min + '" max="' + r.max + '" step="' + r.step + '" value="' + v + '"><output>' + v + (r.unit || '') + '</output></div>';
+        case 'number': return lab + '<div class="gs-num"><input type="number" id="' + id + '" data-p="' + r.path + '" data-t="num" min="' + r.min + '" max="' + r.max + '" step="' + r.step + '" value="' + v + '"><output>' + (r.unit || '') + '</output></div>';
         case 'check': return '<label class="full" style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="' + id + '" data-p="' + r.path + '"' + (v ? ' checked' : '') + '> ' + esc(r.label) + '</label>';
         case 'color': return lab + '<div style="display:flex;gap:8px;align-items:center"><input type="color" id="' + id + '" data-p="' + r.path + '" value="' + esc(/^#[0-9a-f]{6}$/i.test(v) ? v : (r.auto ? s.colors.ink : '#000000')) + '">' + (r.auto ? '<span style="color:#6a7488">' + (v ? 'Custom' : 'Automatic') + '</span>' + (v ? '<button type="button" class="gs-btn" data-auto="' + r.path + '">Use automatic</button>' : '') : '') + '</div>';
         case 'textarea': return lab + '<textarea id="' + id + '" data-p="' + r.path + '" rows="2">' + esc(v) + '</textarea>';
@@ -206,7 +207,7 @@
       }
       if (!p) return;
       var v;
-      if (t.type === 'checkbox') v = t.checked; else if (t.dataset.t === 'num') { v = parseFloat(t.value); var o = t.parentNode.querySelector('output'); var r = SCHEMA.filter(function (x) { return x.path === p; })[0]; if (o) o.textContent = v + ((r && r.unit) || ''); }
+      if (t.type === 'checkbox') v = t.checked; else if (t.dataset.t === 'num') { v = parseFloat(t.value); if (isNaN(v)) return; }
       else v = t.value;
       api.set(p, v);
     });
@@ -228,7 +229,14 @@
       else if (x === 'min') { panel.classList.toggle('min'); render(); }
       else if (x === 'reset') { api.reset(); render(); }
       else if (x === 'petalreset') { api.set('petals.list', []); render(); }
-      else if (x === 'copy') { var txt = JSON.stringify(api.get(), null, 2); try { navigator.clipboard.writeText(txt); b.textContent = 'Copied'; } catch (err) { b.textContent = 'Copy failed'; } setTimeout(function () { b.textContent = 'Copy settings'; }, 1400); }
+      else if (x === 'copy') { var txt = JSON.stringify(api.get(), null, 2); var ok = false; try { var ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;left:-9999px;top:0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); document.body.removeChild(ta); } catch (err) { ok = false; } if (!ok) { try { navigator.clipboard.writeText(txt); ok = true; } catch (err2) { ok = false; } } b.textContent = ok ? 'Copied' : 'Copy failed'; setTimeout(function () { b.textContent = 'Copy settings'; }, 1400); }
+      else if (x === 'paste') { pasteOn = !pasteOn; render(); }
+      else if (x === 'pasteapply') {
+        var box = panel.querySelector('#gs-pastebox'), msg = panel.querySelector('#gs-pastemsg'), obj;
+        try { obj = JSON.parse(box.value); } catch (err) { msg.textContent = 'That is not valid settings text.'; return; }
+        var walk = function (o, pre) { Object.keys(o).forEach(function (k) { var v = o[k], pth = pre ? pre + '.' + k : k; if (v && typeof v === 'object' && !Array.isArray(v)) walk(v, pth); else api.set(pth, v, true); }); };
+        walk(obj, ''); api.commit(); pasteOn = false; render();
+      }
       else if (x === 'diag') { diagOn = !diagOn; render(); }
       else if (x === 'diagcopy') { try { navigator.clipboard.writeText(api.diagnostics()); b.textContent = 'Copied'; } catch (err) { b.textContent = 'Copy failed'; } setTimeout(function () { b.textContent = 'Copy'; }, 1400); }
     });

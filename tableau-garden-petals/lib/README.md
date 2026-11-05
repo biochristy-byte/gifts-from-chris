@@ -18,9 +18,9 @@ https://github.com/tableau/extensions-api/tree/main/lib
 1. Open that page and click `tableau.extensions.1.latest.min.js`.
 2. Click the download icon on the file view ("Download raw file").
 3. Save it into this folder, so the full path is
-   `tableau-lollipop/lib/tableau.extensions.1.latest.min.js`.
+   `tableau-garden-petals/lib/tableau.extensions.1.latest.min.js`.
 
-Or from a terminal, run this from the `tableau-lollipop` folder:
+Or from a terminal, run this from the `tableau-garden-petals` folder:
 
 ```bash
 curl -L -o lib/tableau.extensions.1.latest.min.js https://raw.githubusercontent.com/tableau/extensions-api/main/lib/tableau.extensions.1.latest.min.js
@@ -40,7 +40,7 @@ The file name has to match exactly. `src/index.html` loads it with:
 <script src="../lib/tableau.extensions.1.latest.min.js"></script>
 ```
 
-With the server running, open `http://localhost:8765/lib/tableau.extensions.1.latest.min.js`
+With the server running, open `http://localhost:8767/lib/tableau.extensions.1.latest.min.js`
 in a browser. You should see a wall of minified JavaScript. A "not found" page
 means the file is in the wrong place or has a different name.
 

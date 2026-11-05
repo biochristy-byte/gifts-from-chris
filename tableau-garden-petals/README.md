@@ -59,6 +59,11 @@ If port 8767 is taken, pick another and change it in the server command and in
 the `<url>` line of `garden-petals.trex`. Tableau reads the manifest only when
 the extension is added, so remove and re-add the extension after editing it.
 
+## Rebuild the PISA dashboard
+
+[`example-pisa/`](example-pisa/README.md) has the data script, the exact dark settings and the
+shelf-by-shelf steps for the Makeover Monday 2026 week 44 garden.
+
 ## Try it without Tableau
 
 `dev/` is a mock of the Extensions API, enough to run the whole viz in a plain
@@ -66,14 +71,14 @@ browser:
 
 ```bash
 python -m http.server 8767
-# open http://localhost:8767/dev/dev.html
+# open http://localhost:8767/dev/dev.html?fresh=1
 ```
 
 The mock enforces the rules that bite in the real thing: a second data reader
 opened before the first is released throws, settings come back as strings,
 data arrives in 10,000-row pages, and column names look like Tableau's
 (`SUM(Value)`). Add `?page=20` to the address to force many small pages. The
-fixtures are made-up numbers. To use your own long-format CSV:
+fixtures are made-up numbers. `?fresh=1` ignores settings saved from an earlier visit. If port 8767 is busy, use another port in both places. To use your own long-format CSV:
 
 ```bash
 python tools/make_fixtures.py my_data.csv     # needs Country, Metric, Value
@@ -85,7 +90,7 @@ extension correctly: that took a run in real Tableau.
 ## Share it
 
 ```bash
-python tools/package.py --base https://your-host/petals
+python tools/package.py --base https://your-host/petals   # needs lib/ filled in first
 ```
 
 builds `dist/garden-petals-viz-extension-<version>.zip` with the manifest URL
@@ -129,7 +134,7 @@ land in `_shots/`, which is git-ignored: they can show anything on your screen.
   the extension's name again in the Viz Extensions menu does, and it resets
   settings to defaults for a moment; Ctrl+Z restores the saved ones. Switching the
   mark type away and back drops the shelves and settings.
-- **No sliders.** Every number is a stepper you can type into.
+- **No sliders.** Every number is a box you type into or step with the arrows.
 
 ## Layout
 
